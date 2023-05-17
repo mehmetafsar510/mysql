@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels: {{ include "ks.labels" (merge (dict "service" .Values.mysql.appKubernetesIoService) $) | nindent 4 }}
+  name: mysql
+spec:
+  replicas: {{ $.Values.mysql.replicas }}
+  selector:
+    matchLabels:
+      {{- include "ks.selectorLabels" (merge (dict "service" .Values.mysql.appKubernetesIoService) $) | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        {{- include "ks.labels" (merge (dict "service" .Values.mysql.appKubernetesIoService) $) | nindent 8 }}
+    spec:
+      volumes:
+        - name: {{ .Values.mysql.volume_name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.mysql.volume_claim_name }}
+        - name: mysql-initdb
+          configMap:
+            name: mysql-initdb-config
+      containers:
+        - name: {{ .Values.mysql.appKubernetesIoService }}
+          image: {{ .Values.mysql.image }}
+          resources:
+            limits:
+              memory: {{ .Values.mysql.resources.limits.memory }}
+              cpu: {{ .Values.mysql.resources.limits.cpu }}
+            requests:
+              cpu: {{ .Values.mysql.resources.requests.cpu }}
+              memory: {{ .Values.mysql.resources.requests.memory }}
+          volumeMounts:
+            - mountPath: "{{ .Values.mysql.mount_path }}"
+              name: {{ .Values.mysql.volume_name }}
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: mysql-root-password
+          ports:
+            - containerPort: {{ .Values.mysql.port }}
+      {{- if and $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range $.Values.global.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      restartPolicy: Always

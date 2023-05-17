@@ -1,0 +1,31 @@
+global:
+  imagePullSecrets:
+    - registry-azurecr-epara
+     
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+    #targetMemoryUtilizationPercentage: 512Mi
+
+mysql:
+  nameSuffix: mysql
+  appKubernetesIoService: mysql
+  port: 3306
+  mysql_root_password: test1234
+  image: mysql:8.0
+  volume_claim_name: mysql-volume
+  mount_path: /var/lib/mysql
+  volume_name: mysql-persistent-storage
+  primary:
+    persistence:
+      size: 8Gi
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 500m
+    requests:
+      memory: 500Mi
+      cpu: 250m
+  

@@ -1,0 +1,32 @@
+{{- if  (.Values.global.autoscaling).enabled }}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "ks.fullname" . }}
+  labels:
+    {{ include "ks.labels" $ | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: "{{ .Values.mysql.appKubernetesIoService }}"
+  minReplicas: {{ .Values.global.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.global.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.global.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.global.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    #{{- if .Values.global.autoscaling.targetMemoryUtilizationPercentage }}
+    #- type: Resource
+    #  resource:
+    #    name: memory
+    #    target:
+    #      type: AverageValue
+    #      averageValue: {{ .Values.global.autoscaling.targetMemoryUtilizationPercentage }}
+    #{{- end }}
+{{- end }}

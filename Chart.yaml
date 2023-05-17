@@ -1,0 +1,10 @@
+apiVersion: v2
+appVersion: 0.0.1
+version: 0.0.1
+name: mysql
+description: A Helm chart for mysql
+type: application
+#dependencies:
+#- name: tpllib
+#  version: 0.0.1
+#  repository: https://harbor.finartz.dev/tpllib/

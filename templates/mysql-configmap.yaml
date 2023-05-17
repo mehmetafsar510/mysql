@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+data:
+  initdb.sql: |
+    CREATE USER wallet@'%' IDENTIFIED BY 'wallet';
+    CREATE DATABASE IF NOT EXISTS `auth`;
+    CREATE DATABASE IF NOT EXISTS `account-currency-exchange`;
+    CREATE DATABASE IF NOT EXISTS `workflow`;
+    CREATE DATABASE IF NOT EXISTS `bff`;
+    CREATE DATABASE IF NOT EXISTS `api_gateway`;
+    CREATE DATABASE IF NOT EXISTS `backoffice`;
+    CREATE DATABASE IF NOT EXISTS `integration`;
+    CREATE DATABASE IF NOT EXISTS `information`;
+    CREATE DATABASE IF NOT EXISTS `transaction_base`;
+    CREATE DATABASE IF NOT EXISTS `notification`;
+    CREATE DATABASE IF NOT EXISTS `account`;
+    CREATE DATABASE IF NOT EXISTS `customer`;
+    CREATE DATABASE IF NOT EXISTS `cross_cutting`;
+    CREATE DATABASE IF NOT EXISTS `money_transfer`;
+    CREATE DATABASE IF NOT EXISTS `utility_payment`;
+    CREATE DATABASE IF NOT EXISTS `reconciliation`;
+    CREATE DATABASE IF NOT EXISTS `file_storage`;
+    CREATE DATABASE IF NOT EXISTS `reporting`;
+    CREATE DATABASE IF NOT EXISTS `withdraw`;
+    CREATE DATABASE IF NOT EXISTS `top_up`;
+    GRANT ALL PRIVILEGES ON *.* TO 'wallet'@'%';
+    set global max_connections = 90000;
